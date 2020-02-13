@@ -130,6 +130,8 @@ def create_cards():
 
 def divide_cards():
     temp_cards = all_cards
+    global decks
+    decks = []
     for a in range(1, player_count+1):
         deck = []
         for c in range(1, int(52/player_count)+1):
@@ -137,7 +139,6 @@ def divide_cards():
             temp_cards.remove(a)
             a.select_id = c
             deck.append(a)
-            a.print_card
         decks.append(deck)
 def assign_cards(numofplayers):
     for a in range(0, numofplayers):
@@ -199,7 +200,6 @@ def give_bags():
     for a in range(len(players)):
         if players[a].tricks_won >= players[a].current_bid:
             players[a].bags += players[a].current_bid
-            #print("test " + players[a].name + " " + str(players[a].bags + players[a].current_bid))
         else:
             players[a].bags += players[a].tricks_won - players[a].current_bid
 
