@@ -117,7 +117,10 @@ best_of_table = None
 best_player_of_table = None
 
 def create_cards():
+    global cards
     cards = []
+    global all_cards
+    all_cards = []
     i = 0
     for x in range(0,13):
         for y in range(0,4):
@@ -258,6 +261,9 @@ def game():
         give_bags()
         for a in range(len(players)):
             print(players[a].name + " now has " + str(players[a].bags) + " bags.")
+            players[a].tricks_won = 0
+            players[a].current_bid = 0
+        current_trick = 0
     # Decide Winner
     winner.append(players[0])
     for a in range(1, len(players)):
