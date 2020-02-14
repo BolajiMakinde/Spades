@@ -61,13 +61,14 @@ suite = {
 
 class player:
 
-    def __init__(self, name, id, deck, current_bid, tricks_won, bags):
+    def __init__(self, name, id, deck, current_bid, tricks_won, bags, _type):
         self.name = name
         self.id = id
         self.deck = deck
         self.current_bid = current_bid
         self.tricks_won = tricks_won
         self.bags = bags
+        self._type = _type
     def print_player(self):
         print("Name: " + self.name + ", ID: " + str(self.id) + ", Deck: ")
         for a in range(len(self.deck)):
@@ -144,34 +145,48 @@ def assign_cards(numofplayers):
     for a in range(0, numofplayers):
         players[a].deck = decks[a]
 
-def create_player(name, id):
-    x = player(name, id, [], 0, 0, 0)
+def create_player(name, id, player_type):
+    x = player(name, id, [], 0, 0, 0, player_type)
     x.print_player()
     players.append(x)
 
 def place_bid(player_id):
     bid = 0
-    while True:
+    global players
+    if players[player_id]._type == "HUMAN":
+        while True:
+            print(players[player_id].name + ", please place your bid (0-9): ")
+            try:
+                bid = int(input())
+            except ValueError:  # gets thrown on any input except an integer value
+                continue
+            if 0 <= bid <= 9:
+                break
+    else:
         print(players[player_id].name + ", please place your bid (0-9): ")
-        try:
-            bid = int(input())
-        except ValueError:  # gets thrown on any input except an integer value
-            continue
-        if 0 <= bid <= 9:
-            break
+        k = random.randint(0,10)
+        print(k)
+        bid = k
     players[player_id].current_bid = bid
 
 def request_card(player_id):
     selected_card = 0
-    while True:
+    if players[player_id]._type == "HUMAN":
+        while True:
+            print(players[player_id].name + ", please place your card: ")
+            players[player_id].print_cards_select()
+            try:
+                selected_card = int(input())
+            except ValueError:  # gets thrown on any input except an integer value
+                continue
+            if 1 <= selected_card <= len(players[player_id].deck):
+                break
+    else:
         print(players[player_id].name + ", please place your card: ")
         players[player_id].print_cards_select()
-        try:
-            selected_card = int(input())
-        except ValueError:  # gets thrown on any input except an integer value
-            continue
-        if 1 <= selected_card <= len(players[player_id].deck):
-            break
+        k = random.randint(1,len(players[player_id].deck))
+        print(k)
+        selected_card = k
     score_trick(players[player_id].deck[selected_card-1], player_id)
     players[player_id].deck.pop(selected_card-1)
     # reasign cards
@@ -225,22 +240,32 @@ def game():
             continue
         if 1 <= num_of_rounds <= 1000:
             break
+    cpu_counter = 0
     if(player_count == 0):
         x = ""
         while(x == ""):
-            print('Add a player (Type Name):')
+            print('Type AI to add a computer or Type a name to add a player (Type Name):')
             x = input()
-        create_player(x, player_count)
+        if(x.upper() == "AI"):
+            create_player("CPU " + str(cpu_counter), player_count, "AI")
+            cpu_counter += 1
+        else:
+            create_player(x, player_count, "HUMAN")
         player_count +=1
         print('Hello, ' + x)
     while(player_count < 4):
         if(player_count > 0 and player_count < 4):
-            print('Type START to begin or Type a name to add a player')
+            print('Type START to begin,Type AI to add a computer, or Type a name to add a player')
             x = input()
             if(x.upper() == "START"):
                 break
-            player_count +=1
-            create_player(x, player_count)
+            elif(x.upper() == "AI"):
+                create_player("CPU " + str(cpu_counter), player_count, "AI")
+                cpu_counter += 1
+                player_count +=1
+            else:
+                player_count +=1
+                create_player(x, player_count, "HUMAN")
         else:
             break
     for a in range(num_of_rounds):
