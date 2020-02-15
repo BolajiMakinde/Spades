@@ -103,7 +103,7 @@ current_round = 1
 
 num_of_rounds = 0
 
-mode = "free4all"
+mode = "free4all" #Modes: "free4all" & "classical"
 
 winner = []
 
@@ -227,16 +227,26 @@ def game():
     global num_of_rounds
     global winner
     global players
+    global mode
     player_count = 0
     current_trick = 0
+    
+    print()
+    print("Welcome to SPADES!")
+    print()
+    y = ""
+    while(y.lower() != "free4all" and y.lower() != "classical"):
+        if mode == "free4all":
+            print('Please select a mode ("classical" or free4all):')
+            y = input().lower()
+    mode = y
+    print()
     while True:
-        print()
-        print("Welcome to SPADES!")
-        print()
         print("How many rounds do you want?")
         try:
             num_of_rounds = int(input())
         except ValueError:  # gets thrown on any input except an integer value
+            print("Please input a number (0-9)")
             continue
         if 1 <= num_of_rounds <= 1000:
             break
@@ -244,28 +254,59 @@ def game():
     if(player_count == 0):
         x = ""
         while(x == ""):
-            print('Type AI to add a computer or Type a name to add a player (Type Name):')
-            x = input()
+            if mode == "free4all":
+                print('Type AI to add a computer or Type a name to add a player (Type Name):')
+                x = input()
+            elif mode == "classical":
+                print('Type AI to add a computer or Type a name to add a player [NORTH](Type Name):')
+                x = input()
         if(x.upper() == "AI"):
             create_player("CPU " + str(cpu_counter), player_count, "AI")
             cpu_counter += 1
+            print('Hello, ' + "CPU " + str(cpu_counter))
         else:
             create_player(x, player_count, "HUMAN")
+            print('Hello, ' + x)
+        if mode == "classical":
+            print("You are NORTH")
         player_count +=1
-        print('Hello, ' + x)
+        
     while(player_count < 4):
         if(player_count > 0 and player_count < 4):
-            print('Type START to begin,Type AI to add a computer, or Type a name to add a player')
-            x = input()
-            if(x.upper() == "START"):
+            if mode == "free4all":
+                if player_count > 1:
+                    print('Type START to begin,Type AI to add a computer, or Type a name to add a player')
+                    x = input()
+                else:
+                    print('Type AI to add a computer or Type a name to add a player (Type Name):')
+                    x = input()
+            elif mode == "classical" and player_count == 1:
+                print('Type AI to add a computer or Type a name to add a player [EAST](Type Name):')
+                x = input()
+            elif mode == "classical" and player_count == 2:
+                print('Type AI to add a computer or Type a name to add a player [SOUTH](Type Name):')
+                x = input()
+            elif mode == "classical" and player_count == 3:
+                print('Type AI to add a computer or Type a name to add a player [WEST](Type Name):')
+                x = input()
+            if(x.upper() == "START" and mode == "free4all" and player_count > 1):
                 break
             elif(x.upper() == "AI"):
                 create_player("CPU " + str(cpu_counter), player_count, "AI")
                 cpu_counter += 1
                 player_count +=1
+                print('Hello, ' + "CPU" + str(cpu_counter))
             else:
                 player_count +=1
                 create_player(x, player_count, "HUMAN")
+                print('Hello, ' + x)
+            if mode == "classical":
+                if player_count == 2:
+                    print("You are EAST")
+                elif player_count == 3:
+                    print("You are SOUTH")
+                else:
+                    print("You are WEST")
         else:
             break
     for a in range(num_of_rounds):
@@ -278,26 +319,53 @@ def game():
             for a in range(player_count):
                 request_card(a)
             best_player_of_table.tricks_won+=1
-            print(best_player_of_table.name + " wins the trick!")
+            z = ""
+            if best_of_table == players[0] and mode == "classical":
+                z == "[North]"
+            elif best_of_table == players[1] and mode == "classical":
+                z == "[East]"
+            elif best_of_table == players[2] and mode == "classical":
+                z == "[South]"
+            elif best_of_table == players[3] and mode == "classical":
+                z == "[West]"
+            print(z+best_player_of_table.name + " wins the trick!")
             best_player_of_table.print_player()
             best_of_table = None
             best_player_of_table = None
             current_trick += 1
         give_bags()
         for a in range(len(players)):
-            print(players[a].name + " now has " + str(players[a].bags) + " bags.")
+            z = ""
+            if a == 0 and mode == "classical":
+                z == "[North]"
+            elif a == 1 and mode == "classical":
+                z == "[East]"
+            elif a == 2 and mode == "classical":
+                z == "[South]"
+            elif a == 3 and mode == "classical":
+                z == "[West]"
+            print(z+players[a].name + " now has " + str(players[a].bags) + " bags.")
             players[a].tricks_won = 0
             players[a].current_bid = 0
         current_trick = 0
     # Decide Winner
-    winner.append(players[0])
-    for a in range(1, len(players)):
-        if(players[a].bags > winner[0].bags):
-            winner = []
-            winner.append(players[a])
-        elif(players[a].bags == winner[0].bags):
-            winner.append(players[a])
-    for a in range(len(winner)):
-        print("Winner is: " + str(winner[a].name))
+    if mode == "free4all":
+        winner.append(players[0])
+        for a in range(1, len(players)):
+            if(players[a].bags > winner[0].bags):
+                winner = []
+                winner.append(players[a])
+            elif(players[a].bags == winner[0].bags):
+                winner.append(players[a])
+        for a in range(len(winner)):
+            print("Winner is: " + str(winner[a].name) + " with " + str(winner[a].bags) + " bags!")
+    else:
+        if(players[0].bags + players[2].bags > players[1].bags + players[3].bags):
+            print("Game is over. Winners are North and South: " + players[0].name + " and " + players[2].name + " with " + str(players[0].bags+players[2].bags) + " bags!")
+        elif(players[0].bags + players[2].bags < players[1].bags + players[3].bags):
+            print("Game is over. Winners are East and West: " + players[1].name + " and " + players[3].name + " with " + str(players[1].bags+players[3].bags) + " bags!")
+        else:
+            print("Game is over. It is a Draw!")
+
     
 game()
