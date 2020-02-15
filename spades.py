@@ -237,7 +237,7 @@ def game():
     y = ""
     while(y.lower() != "free4all" and y.lower() != "classical"):
         if mode == "free4all":
-            print('Please select a mode ("classical" or free4all):')
+            print('Please select a mode ("classical" or "free4all"):')
             y = input().lower()
     mode = y
     print()
