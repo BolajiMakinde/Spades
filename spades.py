@@ -47,6 +47,7 @@
 #Anu is here
 
 import random
+from Lowest_Card_First import *
 
 card_number = {
     "2" : 1,
@@ -196,7 +197,8 @@ def request_card(player_id):
     else:
         print(players[player_id].name + ", please place your card: ")
         players[player_id].print_cards_select()
-        k = random.randint(1,len(players[player_id].deck))
+        #k = random.randint(1,len(players[player_id].deck)) #insert engine here
+        k = choose_Card(players[player_id].deck)
         print(k)
         selected_card = k
     score_trick(players[player_id].deck[selected_card-1], player_id)
@@ -217,7 +219,7 @@ def score_trick(c, players_id):
             best_player_of_table = players[players_id]
     elif c.mysuite == "Spades":
         best_of_table = c
-        best_player_of_table = players[players_id] 
+        best_player_of_table = players[players_id]
     elif c.mynumber > best_of_table.mynumber:
         best_of_table = c #whoever goes last in event of tie wins
         best_player_of_table = players[players_id]
@@ -242,7 +244,7 @@ def game():
     global mode
     player_count = 0
     current_trick = 0
-    
+
     print()
     print("Welcome to SPADES!")
     print()
@@ -282,7 +284,7 @@ def game():
         if mode == "classical":
             print("You are NORTH")
         player_count +=1
-        
+
     while(player_count < 4):
         if(player_count > 0 and player_count < 4):
             if mode == "free4all":
@@ -327,7 +329,7 @@ def game():
         assign_cards(player_count)
         for a in range(0,player_count):
             place_bid(a)
-        while len(players[0].deck) != 0: 
+        while len(players[0].deck) != 0:
             for a in range(player_count):
                 request_card(a)
             best_player_of_table.tricks_won+=1
@@ -379,5 +381,5 @@ def game():
         else:
             print("Game is over. It is a Draw!")
 
-    
+
 game()
