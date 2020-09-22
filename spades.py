@@ -47,7 +47,7 @@
 #Anu is here
 
 import random
-import Lowest_Card_First
+import Lowest_Card_First as lcf
 
 card_number = {
     "2" : 1,
@@ -86,7 +86,7 @@ class player:
         print("Name: " + self.name + ", ID: " + str(self.id) + ", Deck: ")
         for a in range(len(self.deck)):
             self.deck[a].print_card()
-        print("\n Current Bid: " + str(self.current_bid) + " Current Tricks Won: " + str(self.tricks_won) + " Current Bags: " + str(self.bags))
+        print("Current Bid: " + str(self.current_bid) + " Current Tricks Won: " + str(self.tricks_won) + " Current Bags: " + str(self.bags))
     def print_cards(self):
         for a in range(len(self.deck)):
             self.deck[a].print_card()
@@ -97,10 +97,7 @@ class player:
 class card:
 
     def __init__(self, mynumber, mysuite, id, select_id):
-        
-        #attribute my number is not th actual number/value of card but rather key that refers that value in the dictionary card_number
-        self.mynumber = list(card_number.keys())[mynumber] 
-        
+        self.mynumber = list(card_number.keys())[mynumber]
         self.mysuite = list(suite.keys())[mysuite]
         self.id = id
         self.select_id = select_id
@@ -180,7 +177,7 @@ def place_bid(player_id):
                 break
     else:
         print(players[player_id].name + ", please place your bid (0-9): ")
-        k = random.randint(0,10) #TODO: Change how # of bids are chosen
+        k = random.randint(0,10)
         print(k)
         bid = k
     players[player_id].current_bid = bid
@@ -201,7 +198,7 @@ def request_card(player_id):
         print(players[player_id].name + ", please place your card: ")
         players[player_id].print_cards_select()
         #k = random.randint(1,len(players[player_id].deck)) #insert engine here
-        k = Lowest_Card_First.choose_Card(players[player_id].deck)
+        k = lcf.choose_Card(players[player_id].deck)
         print(k)
         selected_card = k
     score_trick(players[player_id].deck[selected_card-1], player_id)
@@ -337,19 +334,15 @@ def game():
                 request_card(a)
             best_player_of_table.tricks_won+=1
             z = ""
-            
-            #instead of having each conditional require mode == "classical" we can do this
-            if (mode == "classical"):
-                if best_of_table == players[0]:
-                    z == "[North]"
-                elif best_of_table == players[1]:
-                    z == "[East]"
-                elif best_of_table == players[2]:
-                    z == "[South]"
-                elif best_of_table == players[3]:
-                    z == "[West]"
-                    
-            print(z+best_player_of_table.name + " wins the trick! \n \n")
+            if best_of_table == players[0] and mode == "classical":
+                z == "[North]"
+            elif best_of_table == players[1] and mode == "classical":
+                z == "[East]"
+            elif best_of_table == players[2] and mode == "classical":
+                z == "[South]"
+            elif best_of_table == players[3] and mode == "classical":
+                z == "[West]"
+            print(z+best_player_of_table.name + " wins the trick!")
             best_player_of_table.print_player()
             best_of_table = None
             best_player_of_table = None
@@ -387,7 +380,6 @@ def game():
             print("Game is over. Winners are East and West: " + players[1].name + " and " + players[3].name + " with " + str(players[1].bags+players[3].bags) + " bags!")
         else:
             print("Game is over. It is a Draw!")
-#print(dir())
 
-if ( __name__ == "__main__"):   
-    game()
+
+game()
