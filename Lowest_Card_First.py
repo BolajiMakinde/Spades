@@ -1,6 +1,6 @@
 # take in deck available to A.I
 # output an intger corresponding to a select id in the deck
-from spades import card_number
+from spades import card_number as cn
 
 def choose_Card(deck):
     lowest_Card = deck[0]
@@ -11,7 +11,7 @@ def choose_Card(deck):
         in order to access it's actual value as an Integer type
         
         '''
-        if card_number[card.mynumber] < card_number[lowest_Card.mynumber]:
+        if deck[card.mynumber] < deck[lowest_Card.mynumber]:
             lowest_Card = card
     return lowest_Card.select_id
 
