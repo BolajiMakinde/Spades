@@ -48,6 +48,7 @@
 
 import random
 import Lowest_Card_First
+#import Highest_Card_First
 
 card_number = {
     "2" : 1,
@@ -65,6 +66,14 @@ card_number = {
     "Ace" : 13,
 }
 
+AI_reference = {
+    "random": random.randint,
+    #"lowest first": Lowest_Card_First.choose_Card,
+   # "highest first": Highest_Card_First.choose_Card,    
+}
+
+
+
 suite = {
     "Clubs" : 1,
     "Diamonds" : 2,
@@ -74,7 +83,7 @@ suite = {
 
 class player:
 
-    def __init__(self, name, id, deck, current_bid, tricks_won, bags, _type):
+    def __init__(self, name, id, deck, current_bid, tricks_won, bags, _type, AI_id = None):
         self.name = name
         self.id = id
         self.deck = deck
@@ -82,6 +91,7 @@ class player:
         self.tricks_won = tricks_won
         self.bags = bags
         self._type = _type
+        self.AI_id = AI_id
     def print_player(self):
         print("Name: " + self.name + ", ID: " + str(self.id) + ", Deck: ")
         for a in range(len(self.deck)):
@@ -200,8 +210,12 @@ def request_card(player_id):
     else:
         print(players[player_id].name + ", please place your card: ")
         players[player_id].print_cards_select()
-        #k = random.randint(1,len(players[player_id].deck)) #insert engine here
-        k = Lowest_Card_First.choose_Card(players[player_id].deck)
+        #decide which AI
+        if players[player_id].AI_id == 0:
+            k = random.randint(1,len(players[player_id].deck)) #insert engine here
+        else:
+            functionToCall = AI_reference[AI_reference[players[player_id]].AI_id]
+            k = functionToCall.choose_Card(players[player_id].deck)
         print(k)
         selected_card = k
     score_trick(players[player_id].deck[selected_card-1], player_id)
@@ -278,7 +292,21 @@ def game():
                 print('Type AI to add a computer or Type a name to add a player [NORTH](Type Name):')
                 x = input()
         if(x.upper() == "AI"):
-            create_player("CPU " + str(cpu_counter), player_count, "AI")
+            a = create_player("CPU " + str(cpu_counter), player_count, "AI")
+            while True:
+                counter = 0
+                print("Select your AI ID")
+                for key in AI_reference:
+                    print(str(key) + " : " + counter)
+                    counter += 1
+                try:
+                    a.AI_id = int(input())
+                except ValueError:  # gets thrown on any input except an integer value
+                    print("Please input a number there")
+                    continue
+                if 0 <= a.AI_id <= (len(AI_reference) - 1):
+                    break
+            
             cpu_counter += 1
             print('Hello, ' + "CPU " + str(cpu_counter))
         else:
